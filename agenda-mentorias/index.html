@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentorias — Bruno Ferracini</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6600;
+    --orange-dim: rgba(255,102,0,0.12);
+    --bg: #0f0f0f;
+    --surface: #181818;
+    --surface2: #222222;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #666;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.1);
+    --red-dim: rgba(239,68,68,0.1);
+    --red: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .brand-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+
+  .brand-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .brand-sub {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  /* Stats */
+  .stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--orange);
+  }
+
+  .stat-value.green { color: var(--green); }
+
+  /* Form */
+  .form-section { display: flex; flex-direction: column; gap: 14px; }
+
+  .form-section h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .field input,
+  .field textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    width: 100%;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--orange);
+    background: #1e1e1e;
+  }
+
+  .field input::placeholder,
+  .field textarea::placeholder { color: #444; }
+
+  .field textarea { resize: vertical; min-height: 64px; }
+
+  /* Date/time row */
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-submit {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-submit:hover { opacity: 0.88; }
+  .btn-submit:active { transform: scale(0.98); }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 40px 40px;
+    overflow-y: auto;
+  }
+
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .main-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .main-date {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    background: var(--surface);
+    padding: 4px;
+    border-radius: 12px;
+    width: fit-content;
+    border: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 8px 20px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+    border: none;
+    background: none;
+  }
+
+  .tab.active {
+    background: var(--orange);
+    color: #fff;
+  }
+
+  /* ── CARDS ── */
+  .cards-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 26px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--orange);
+    border-radius: 3px 0 0 3px;
+  }
+
+  .card.feita::before { background: var(--border); }
+  .card.feita { opacity: 0.45; }
+
+  .card:hover {
+    border-color: #333;
+    background: #1c1c1c;
+  }
+
+  .card-left { display: flex; flex-direction: column; gap: 10px; }
+
+  .card-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .badge-hoje { background: var(--orange); color: #fff; }
+  .badge-amanha { background: var(--orange-dim); color: var(--orange); }
+
+  .card-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .chip.orange { background: var(--orange-dim); border-color: transparent; color: var(--orange); }
+
+  .card-obs {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  /* Actions */
+  .card-actions { display: flex; gap: 8px; }
+
+  .btn-action {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-action:hover { background: var(--surface); }
+
+  .btn-action.done {
+    background: var(--green-dim);
+    color: var(--green);
+    border-color: transparent;
+  }
+
+  .btn-action.del {
+    background: var(--red-dim);
+    color: var(--red);
+    border-color: transparent;
+  }
+
+  /* Empty */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty p { font-size: 15px; line-height: 1.6; }
+
+  /* Section divider */
+  .divider-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .divider-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+
+  /* Color date inputs on webkit */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">Acelera Shopee</span>
+      <span class="brand-name">Agenda de<br>Mentorias</span>
+      <span class="brand-sub">Bruno Ferracini</span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="form-section">
+      <h3>Nova mentoria</h3>
+
+      <div class="field">
+        <label>Nome do cliente</label>
+        <input type="text" id="nome" placeholder="Ex: João Silva" />
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Data</label>
+          <input type="date" id="data" />
+        </div>
+        <div class="field">
+          <label>Horário</label>
+          <input type="time" id="hora" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Observações</label>
+        <textarea id="obs" placeholder="Ex: 1ª mentoria, foco em ADS, pagou R$200..."></textarea>
+      </div>
+
+      <button class="btn-submit" onclick="adicionar()">+ Agendar mentoria</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-header">
+      <div class="main-title">Próximas mentorias</div>
+      <div class="main-date" id="dataHoje"></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="setTab('proximas', this)">Agendadas</button>
+      <button class="tab" onclick="setTab('feitas', this)">Realizadas</button>
+    </div>
+
+    <div class="cards-grid" id="lista"></div>
+  </main>
+
+</div>
+
+<script>
+  let tabAtual = 'proximas';
+
+  function getMentorias() {
+    return JSON.parse(localStorage.getItem('mentorias-bf') || '[]');
+  }
+
+  function salvar(m) {
+    localStorage.setItem('mentorias-bf', JSON.stringify(m));
+  }
+
+  function adicionar() {
+    const nome = document.getElementById('nome').value.trim();
+    const data = document.getElementById('data').value;
+    const hora = document.getElementById('hora').value;
+    const obs  = document.getElementById('obs').value.trim();
+
+    if (!nome || !data || !hora) {
+      alert('Preencha nome, data e horário!');
+      return;
+    }
+
+    const list = getMentorias();
+    list.push({ id: Date.now(), nome, data, hora, obs, feita: false });
+    salvar(list);
+
+    ['nome','data','hora','obs'].forEach(id => document.getElementById(id).value = '');
+    render();
+  }
+
+  function marcarFeita(id) {
+    salvar(getMentorias().map(m => m.id === id ? {...m, feita: true} : m));
+    render();
+  }
+
+  function deletar(id) {
+    if (!confirm('Remover esta mentoria?')) return;
+    salvar(getMentorias().filter(m => m.id !== id));
+    render();
+  }
+
+  function fmt(d) {
+    const [a,m,dia] = d.split('-');
+    return `${dia}/${m}/${a}`;
+  }
+
+  function getBadge(dataStr) {
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const d = new Date(dataStr + 'T00:00:00');
+    const diff = Math.round((d - hoje) / 86400000);
+    if (diff === 0) return '<span class="badge badge-hoje">Hoje</span>';
+    if (diff === 1) return '<span class="badge badge-amanha">Amanhã</span>';
+    return '';
+  }
+
+  function setTab(tab, el) {
+    tabAtual = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    render();
+  }
+
+  function renderStats() {
+    const all = getMentorias();
+    const proximas = all.filter(m => !m.feita).length;
+    const feitas   = all.filter(m => m.feita).length;
+
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
+    const hojeCount = all.filter(m => {
+      const d = new Date(m.data + 'T00:00:00');
+      return !m.feita && d.getTime() === hoje.getTime();
+    }).length;
+
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card">
+        <span class="stat-label">Agendadas</span>
+        <span class="stat-value">${proximas}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Hoje</span>
+        <span class="stat-value">${hojeCount}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Realizadas</span>
+        <span class="stat-value green">${feitas}</span>
+      </div>`;
+  }
+
+  function render() {
+    renderStats();
+
+    const all = getMentorias();
+    const lista = document.getElementById('lista');
+
+    const items = tabAtual === 'proximas'
+      ? all.filter(m => !m.feita).sort((a,b) => (a.data+a.hora).localeCompare(b.data+b.hora))
+      : all.filter(m => m.feita).sort((a,b) => (b.data+b.hora).localeCompare(a.data+a.hora));
+
+    if (items.length === 0) {
+      lista.innerHTML = `
+        <div class="empty">
+          <div class="icon">${tabAtual === 'proximas' ? '📭' : '✅'}</div>
+          <p>${tabAtual === 'proximas' ? 'Nenhuma mentoria agendada.<br>Adicione uma pelo painel ao lado.' : 'Nenhuma mentoria realizada ainda.'}</p>
+        </div>`;
+      return;
+    }
+
+    lista.innerHTML = items.map(m => `
+      <div class="card ${m.feita ? 'feita' : ''}">
+        <div class="card-left">
+          <div class="card-name">
+            ${m.nome}
+            ${!m.feita ? getBadge(m.data) : ''}
+          </div>
+          <div class="card-meta">
+            <div class="chip orange">📅 ${fmt(m.data)}</div>
+            <div class="chip orange">🕐 ${m.hora}</div>
+          </div>
+          ${m.obs ? `<div class="card-obs">📝 ${m.obs}</div>` : ''}
+        </div>
+        <div class="card-actions">
+          ${!m.feita ? `<button class="btn-action done" onclick="marcarFeita(${m.id})">✓ Realizada</button>` : ''}
+          <button class="btn-action del" onclick="deletar(${m.id})">Remover</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // Data de hoje no header
+  const d = new Date();
+  document.getElementById('dataHoje').textContent =
+    d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  render();
+</script>
+</body>
+</html>
